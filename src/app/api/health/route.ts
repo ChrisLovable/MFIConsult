@@ -1,0 +1,21 @@
+﻿import { NextResponse } from "next/server";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+export async function GET() {
+  return NextResponse.json({
+    ok: true,
+    service: "ConsultBill",
+    version: "0.1.0",
+    timestamp: new Date().toISOString(),
+    configured: {
+      telegram: Boolean(process.env.TELEGRAM_BOT_TOKEN),
+      webhookSecret: Boolean(process.env.TELEGRAM_WEBHOOK_SECRET),
+      supabase: Boolean(
+        process.env.SUPABASE_URL &&
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+      ),
+    },
+  });
+}
