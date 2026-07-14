@@ -14,8 +14,9 @@ export async function GET() {
       webhookSecret: Boolean(process.env.TELEGRAM_WEBHOOK_SECRET),
       supabase: Boolean(
         process.env.SUPABASE_URL &&
-        process.env.SUPABASE_SERVICE_ROLE_KEY
+        process.env.SUPABASE_SECRET_KEY
       ),
     },
   });
 }
+
