@@ -219,6 +219,8 @@ export async function extractBillingDetails(
           "Extract only information stated in the transcript or directly calculable from it.",
           "Never invent a patient, diagnosis, procedure, tariff code, ICD-10 code, duration, time, or price.",
           "Use null or an empty array when information is absent.",
+          "The missing_fields array must contain only configured required_fields from the doctor billing profile that are absent. If required_fields is not configured, require only patient_reference, consultation_date, consultation_type, and duration_minutes.",
+          "Preserve every letter and number in dictated ICD-10 and tariff codes. Never silently change I10 to 10. If a code is ambiguous, add a warning.",
           "A code explicitly dictated by the doctor must have source doctor_stated.",
           "A code inferred by you must have source ai_suggested and must also create a warning requiring doctor confirmation.",
           "Keep notes limited to information needed for billing.",
@@ -279,3 +281,4 @@ export async function extractBillingDetails(
 
   return billingExtractionSchema.parse(JSON.parse(text));
 }
+

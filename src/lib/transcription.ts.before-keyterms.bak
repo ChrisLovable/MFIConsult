@@ -15,22 +15,9 @@ function extensionForMime(mimeType: string): string {
   return "audio";
 }
 
-function cleanKeyterms(keyterms: string[]): string[] {
-  return Array.from(
-    new Set(
-      keyterms
-        .map((value) => value.trim())
-        .filter(Boolean)
-        .filter((value) => value.length < 50)
-        .filter((value) => !/[<>{}\[\]\\]/.test(value)),
-    ),
-  ).slice(0, 100);
-}
-
 export async function transcribeConsultationAudio(
   audio: Buffer,
   mimeType: string,
-  keyterms: string[] = [],
 ): Promise<string> {
   const env = getServerEnv();
 
@@ -50,17 +37,12 @@ export async function transcribeConsultationAudio(
     new Blob([bytes], { type: mimeType }),
     `consultation.${extensionForMime(mimeType)}`,
   );
-
   form.append("model_id", "scribe_v2");
   form.append("tag_audio_events", "false");
   form.append("timestamps_granularity", "none");
   form.append("diarize", "false");
   form.append("num_speakers", "1");
   form.append("no_verbatim", "true");
-
-  for (const keyterm of cleanKeyterms(keyterms)) {
-    form.append("keyterms", keyterm);
-  }
 
   const response = await fetch(
     "https://api.elevenlabs.io/v1/speech-to-text",
