@@ -1,12 +1,11 @@
 ﻿import { timingSafeEqual } from "node:crypto";
-import { after, NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerEnv } from "@/lib/env";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import {
   escapeTelegramHtml,
   sendTelegramMessage,
 } from "@/lib/telegram";
-import { processConsultationSubmission } from "@/lib/consultbill-processing";
 import type {
   TelegramAudio,
   TelegramUpdate,
@@ -288,14 +287,9 @@ export async function POST(request: NextRequest) {
     ].join("\n"),
   );
 
-  after(async () => {
-    await processConsultationSubmission(submission.id);
-  });
-
   return NextResponse.json({
     ok: true,
     submissionId: submission.id,
     reference: submission.reference,
   });
 }
-
