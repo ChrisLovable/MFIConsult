@@ -31,8 +31,12 @@ export interface BillingEmailInput {
   subject: string;
   text: string;
   html: string;
+
   csvFilename: string;
   csvContent: string;
+
+  xlsxFilename: string;
+  xlsxContent: Buffer;
 }
 
 export async function sendBillingEmail(
@@ -53,8 +57,17 @@ export async function sendBillingEmail(
     attachments: [
       {
         filename: input.csvFilename,
-        content: Buffer.from(`\uFEFF${input.csvContent}`, "utf8"),
+        content: Buffer.from(
+          `\uFEFF${input.csvContent}`,
+          "utf8",
+        ),
         contentType: "text/csv; charset=utf-8",
+      },
+      {
+        filename: input.xlsxFilename,
+        content: input.xlsxContent,
+        contentType:
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       },
     ],
   });

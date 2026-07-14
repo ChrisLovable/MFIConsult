@@ -7,7 +7,7 @@ export async function GET() {
   return NextResponse.json({
     ok: true,
     service: "ConsultBill",
-    version: "0.3.0",
+    version: "0.4.0",
     timestamp: new Date().toISOString(),
     configured: {
       telegram: Boolean(process.env.TELEGRAM_BOT_TOKEN),
@@ -34,3 +34,4 @@ export async function GET() {
     },
   });
 }
+

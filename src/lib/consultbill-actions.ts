@@ -3,6 +3,7 @@
   type BillingExtraction,
 } from "@/lib/billing-extraction";
 import { sendBillingEmail } from "@/lib/email";
+import { buildBillingWorkbook } from "@/lib/billing-workbook";
 import { getServerEnv } from "@/lib/env";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import {
@@ -508,6 +509,14 @@ export async function confirmLatestBillingDraft(
       throw deliveryQueueError;
     }
 
+    const xlsx = await buildBillingWorkbook({
+      reference: submission.reference,
+      doctor: doctor.full_name,
+      practice: doctor.practice_name ?? "",
+      patientReference: extraction.patient_reference ?? "",
+      rows,
+    });
+
     const result = await sendBillingEmail({
       to: recipient,
       subject,
@@ -515,6 +524,8 @@ export async function confirmLatestBillingDraft(
       html,
       csvFilename: `${submission.reference}.csv`,
       csvContent: csv,
+      xlsxFilename: `${submission.reference}.xlsx`,
+      xlsxContent: xlsx,
     });
 
     const sentAt = new Date().toISOString();
@@ -556,7 +567,7 @@ export async function confirmLatestBillingDraft(
         `Reference: <code>${escapeTelegramHtml(submission.reference)}</code>`,
         `Recipient: ${escapeTelegramHtml(recipient)}`,
         "",
-        "The email includes a copyable table and CSV attachment for Excel.",
+        "The email includes a copyable table, CSV attachment, and formatted Excel workbook.",
       ].join("\n"),
     );
   } catch (error) {
@@ -648,3 +659,4 @@ export async function cancelLatestBillingDraft(
     ].join("\n"),
   );
 }
+
