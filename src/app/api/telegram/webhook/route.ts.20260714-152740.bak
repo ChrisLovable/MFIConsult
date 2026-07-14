@@ -7,12 +7,6 @@ import {
   sendTelegramMessage,
 } from "@/lib/telegram";
 import { processConsultationSubmission } from "@/lib/consultbill-processing";
-import {
-  cancelLatestBillingDraft,
-  confirmLatestBillingDraft,
-  isCancellationText,
-  isConfirmationText,
-} from "@/lib/consultbill-actions";
 import type {
   TelegramAudio,
   TelegramUpdate,
@@ -202,54 +196,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
-  if (message.text && isCancellationText(message.text)) {
-    if (!doctor || !doctor.is_active) {
-      await sendTelegramMessage(
-        chatId,
-        "Your Telegram account is not linked to an active doctor profile.",
-      );
-
-      return NextResponse.json({
-        ok: true,
-        authorised: false,
-      });
-    }
-
-    await cancelLatestBillingDraft(doctor.id, chatId);
-
-    return NextResponse.json({
-      ok: true,
-      action: "cancel",
-    });
-  }
-
-  if (message.text && isConfirmationText(message.text)) {
-    if (!doctor || !doctor.is_active) {
-      await sendTelegramMessage(
-        chatId,
-        "Your Telegram account is not linked to an active doctor profile.",
-      );
-
-      return NextResponse.json({
-        ok: true,
-        authorised: false,
-      });
-    }
-
-    await sendTelegramMessage(
-      chatId,
-      "Confirmation received. Preparing the accounting email and Excel-ready CSV.",
-    );
-
-    after(async () => {
-      await confirmLatestBillingDraft(doctor.id, chatId);
-    });
-
-    return NextResponse.json({
-      ok: true,
-      action: "confirm",
-    });
-  }
   const audio = getAudioDetails(message.voice, message.audio);
 
   if (!audio) {
@@ -352,5 +298,4 @@ export async function POST(request: NextRequest) {
     reference: submission.reference,
   });
 }
-
 
