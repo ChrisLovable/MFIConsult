@@ -1,12 +1,47 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { getDoctors } from "@/lib/admin-data";
 
 function onboardingLabel(status: string): string {
   return status.replaceAll("_", " ");
 }
 
-export default async function DoctorsPage() {
+export default async function DoctorsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    q?: string;
+  }>;
+}) {
   const doctors = await getDoctors();
+  const params = await searchParams;
+
+  const query = (params.q ?? "").trim();
+  const normalisedQuery = query.toLowerCase();
+
+  const filteredDoctors = normalisedQuery
+    ? doctors.filter((doctor) => {
+        const searchableDoctor = doctor as typeof doctor & {
+          email?: string | null;
+          mobile?: string | null;
+          mobile_number?: string | null;
+        };
+
+        const searchableValues = [
+          doctor.full_name,
+          doctor.practice_name,
+          doctor.speciality,
+          searchableDoctor.email,
+          searchableDoctor.mobile,
+          searchableDoctor.mobile_number,
+        ];
+
+        return searchableValues.some((value) =>
+          String(value ?? "")
+            .toLowerCase()
+            .includes(normalisedQuery),
+        );
+      })
+    : doctors;
 
   return (
     <>
@@ -15,7 +50,9 @@ export default async function DoctorsPage() {
           <span className="eyebrow">
             Provider network
           </span>
+
           <h1>Doctors</h1>
+
           <p>
             Configure identity, billing rules,
             Telegram access and accounting
@@ -31,6 +68,62 @@ export default async function DoctorsPage() {
         </Link>
       </header>
 
+      <section className="doctor-search-card">
+        <form
+          method="get"
+          action="/admin/doctors"
+          className="doctor-search-form"
+        >
+          <div className="doctor-search-copy">
+            <label htmlFor="doctor-search">
+              Search doctors
+            </label>
+
+            <small>
+              Search by doctor, practice,
+              speciality, email or mobile number.
+            </small>
+          </div>
+
+          <div className="doctor-search-controls">
+            <input
+              id="doctor-search"
+              type="search"
+              name="q"
+              defaultValue={query}
+              placeholder="Search doctor or practice..."
+              autoComplete="off"
+            />
+
+            <button
+              type="submit"
+              className="primary-button"
+            >
+              Search
+            </button>
+
+            {query ? (
+              <Link
+                href="/admin/doctors"
+                className="secondary-button"
+              >
+                Clear
+              </Link>
+            ) : null}
+          </div>
+        </form>
+
+        <div className="doctor-result-count">
+          <strong>{filteredDoctors.length}</strong>
+
+          <span>
+            {filteredDoctors.length === 1
+              ? "doctor found"
+              : "doctors found"}
+          </span>
+        </div>
+      </section>
+
       <section className="content-card">
         <div className="table-wrap">
           <table className="admin-table doctors-table">
@@ -44,9 +137,10 @@ export default async function DoctorsPage() {
                 <th />
               </tr>
             </thead>
+
             <tbody>
-              {doctors.length ? (
-                doctors.map((doctor) => {
+              {filteredDoctors.length ? (
+                filteredDoctors.map((doctor) => {
                   const profile =
                     doctor.billing_profile ?? {};
 
@@ -56,21 +150,25 @@ export default async function DoctorsPage() {
                         <strong>
                           {doctor.full_name}
                         </strong>
+
                         <small>
                           {doctor.speciality ||
                             "Speciality not set"}
                         </small>
                       </td>
+
                       <td>
                         {doctor.practice_name ||
                           "Not set"}
                       </td>
+
                       <td>
                         {String(
                           profile.billing_basis ??
                             "per_consultation",
                         ).replaceAll("_", " ")}
                       </td>
+
                       <td>
                         <span
                           className={
@@ -84,6 +182,7 @@ export default async function DoctorsPage() {
                             : "Not linked"}
                         </span>
                       </td>
+
                       <td>
                         <span
                           className={`status-badge status-${doctor.onboarding_status}`}
@@ -93,6 +192,7 @@ export default async function DoctorsPage() {
                           )}
                         </span>
                       </td>
+
                       <td className="table-action">
                         <Link
                           href={`/admin/doctors/${doctor.id}`}
@@ -109,7 +209,9 @@ export default async function DoctorsPage() {
                     colSpan={6}
                     className="empty-cell"
                   >
-                    No doctors have been added.
+                    {query
+                      ? `No doctors match "${query}".`
+                      : "No doctors have been added."}
                   </td>
                 </tr>
               )}

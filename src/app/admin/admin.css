@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   --ink: #122026;
   --muted: #637278;
   --line: #dce5e2;
@@ -1929,4 +1929,150 @@ textarea {
   border-color: #0b9448 !important;
   box-shadow:
     0 0 0 3px rgba(11, 148, 72, 0.14) !important;
+}
+
+/* ===== LOGIN HEADLINE AND DOCTOR SEARCH ===== */
+
+.visual-content {
+  width: min(760px, 90%) !important;
+}
+
+.visual-content .login-hero-title {
+  margin: 18px 0 38px;
+  font-size: clamp(
+    34px,
+    4vw,
+    56px
+  ) !important;
+  line-height: 1.02 !important;
+  letter-spacing: -0.05em;
+}
+
+.login-hero-title span {
+  display: block;
+  white-space: nowrap;
+}
+
+.doctor-search-card {
+  margin-bottom: 20px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  border: 1px solid #d7e1de;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: var(--shadow);
+}
+
+.doctor-search-form {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.doctor-search-copy {
+  min-width: 210px;
+  display: grid;
+  gap: 5px;
+}
+
+.doctor-search-copy label {
+  color: #122026 !important;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.doctor-search-copy small {
+  color: #637278 !important;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.doctor-search-controls {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  gap: 9px;
+}
+
+.doctor-search-controls input {
+  min-width: 180px;
+  min-height: 44px;
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #bdcbc7;
+  border-radius: 11px;
+  outline: none;
+  color: #122026 !important;
+  background: #ffffff !important;
+}
+
+.doctor-search-controls input::placeholder {
+  color: #899692;
+  opacity: 1;
+}
+
+.doctor-search-controls input:focus {
+  border-color: #0b9448;
+  box-shadow:
+    0 0 0 3px
+    rgba(11, 148, 72, 0.13);
+}
+
+.doctor-result-count {
+  min-width: 105px;
+  padding-left: 20px;
+  display: grid;
+  gap: 3px;
+  border-left: 1px solid #e0e7e4;
+  text-align: right;
+}
+
+.doctor-result-count strong {
+  color: #0b8e46 !important;
+  font-size: 25px;
+  line-height: 1;
+}
+
+.doctor-result-count span {
+  color: #68777c !important;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1050px) {
+  .doctor-search-card,
+  .doctor-search-form {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .doctor-search-copy {
+    min-width: 0;
+  }
+
+  .doctor-result-count {
+    padding-top: 13px;
+    padding-left: 0;
+    border-top: 1px solid #e0e7e4;
+    border-left: 0;
+    text-align: left;
+  }
+}
+
+@media (max-width: 680px) {
+  .doctor-search-controls {
+    flex-direction: column;
+  }
+
+  .doctor-search-controls input,
+  .doctor-search-controls a,
+  .doctor-search-controls button {
+    width: 100%;
+  }
 }

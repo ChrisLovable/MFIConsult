@@ -127,10 +127,9 @@ export default async function AdminLoginPage({
           <span className="eyebrow light">
             From consultation to billing
           </span>
-          <h2>
-            One voice note.
-            <br />
-            One verified billing record.
+          <h2 className="login-hero-title">
+            <span>One voice note.</span>
+            <span>One verified billing record.</span>
           </h2>
           <div className="flow-list">
             <span>01 Doctor records</span>
