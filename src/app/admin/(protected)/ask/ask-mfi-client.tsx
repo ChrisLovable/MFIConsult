@@ -226,7 +226,7 @@ export default function AskMfiClient() {
                       <tr key={index}>
                         {columns.map((column) => (
                           <td key={column}>
-                            {String(row[column] ?? "â€”")}
+                            {String(row[column] ?? "Ã¢â‚¬â€")}
                           </td>
                         ))}
                       </tr>

@@ -758,17 +758,41 @@ function fallbackAnswer(
 }
 
 function cleanAiAnswer(value: string): string {
-  return value
-    .replace(/^#{1,6}\s+/gm, "")
-    .replace(/\*\*(.*?)\*\*/g, "$1")
-    .replace(/__(.*?)__/g, "$1")
-    .replace(/^\s*[-*]\s+/gm, "")
-    .replace(/^\s*\|[-:|\s]+\|\s*$/gm, "")
-    .replace(/^\s*\|.*\|\s*$/gm, "")
-    .replace(/`([^`]+)`/g, "$1")
+  const cleanedLines = value
+    .split(/\r?\n/)
+    .filter((line) => {
+      const trimmed = line.trim();
+
+      if (!trimmed) {
+        return true;
+      }
+
+      if (/^\|.*\|$/.test(trimmed)) {
+        return false;
+      }
+
+      if (/^[-:|\s]+$/.test(trimmed)) {
+        return false;
+      }
+
+      return true;
+    })
+    .map((line) =>
+      line
+        .replace(/^#{1,6}\s+/g, "")
+        .replace(/\*\*(.*?)\*\*/g, "$1")
+        .replace(/__(.*?)__/g, "$1")
+        .replace(/^\s*[-*]\s+/g, "")
+        .replace(/`([^`]+)`/g, "$1")
+        .trim(),
+    );
+
+  return cleanedLines
+    .join("\n")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
+
 async function intelligentAnswer(
   question: string,
   plan: AskPlan,
@@ -791,25 +815,27 @@ async function intelligentAnswer(
       `
 You are the MFI Consult financial intelligence analyst.
 
-Write a polished executive management answer based only on the verified
-facts supplied.
+Write a polished executive answer based only on the verified facts
+supplied by the application.
 
 Rules:
-- Never invent a doctor, amount, date or percentage.
+- Never invent a doctor, practice, amount, date or percentage.
 - State the exact date period naturally.
-- Answer the user's question directly.
-- Highlight the most important finding.
+- Answer the question directly.
 - Write two to four short paragraphs.
 - Use plain text only.
 - Do not use Markdown.
 - Do not use headings, hashes, asterisks or bullet points.
-- Do not create a table or repeat every result row.
-- The application displays the verified table separately.
-- Keep the answer under 140 words.
+- Do not create a table.
+- Do not repeat all result rows.
+- The application displays the verified result table separately.
+- For ranking or threshold questions, focus on matching doctors.
+- Do not give portfolio-wide totals unless the question asks for them.
+- Keep the answer under 130 words.
 - Do not mention SQL, prompts or internal implementation.
 `.trim(),
       facts,
-      500,
+      450,
     );
 
     return cleanAiAnswer(answer);
@@ -817,7 +843,6 @@ Rules:
     return fallbackAnswer(plan, rows);
   }
 }
-
 export async function askMfi(question: string) {
   const plan = await createPlan(question);
   const result = await executePlan(plan);
