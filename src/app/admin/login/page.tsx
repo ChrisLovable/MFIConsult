@@ -1,4 +1,4 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 import { redirect } from "next/navigation";
 import "../admin.css";
 import {
@@ -112,7 +112,7 @@ export default async function AdminLoginPage({
           <div className="flow-list">
             <span>01 Doctor records</span>
             <span>02 AI structures</span>
-            <span>03 Doctor confirms</span>
+            <span>03 AI prepares billing</span>
             <span>04 MFI receives</span>
           </div>
         </div>
@@ -120,3 +120,4 @@ export default async function AdminLoginPage({
     </main>
   );
 }
+
