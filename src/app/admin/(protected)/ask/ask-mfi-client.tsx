@@ -1,6 +1,11 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import {
+  FormEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 interface AskPlan {
   intent: string;
@@ -58,7 +63,17 @@ const preferredChartMetrics = [
   "Invoices",
 ];
 
-function numericValue(value: string | number | null): number {
+const moneyTotalKeys = new Set([
+  "invoiced",
+  "paid",
+  "outstanding",
+  "overdue",
+  "value",
+]);
+
+function numericValue(
+  value: string | number | null,
+): number {
   if (typeof value === "number" && Number.isFinite(value)) {
     return value;
   }
@@ -67,14 +82,43 @@ function numericValue(value: string | number | null): number {
     return 0;
   }
 
-  const normalized = value
+  const compact = value
     .replace(/[^\d,.-]/g, "")
-    .replace(/\s/g, "")
-    .replace(/,(?=\d{2}$)/, ".")
-    .replace(/,/g, "");
+    .replace(/\s/g, "");
+
+  const normalized =
+    compact.includes(",") &&
+    compact.lastIndexOf(",") >
+      compact.lastIndexOf(".")
+      ? compact
+          .replace(/\./g, "")
+          .replace(",", ".")
+      : compact.replace(/,/g, "");
 
   const parsed = Number(normalized);
   return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function formatTotal(
+  key: string,
+  value: number,
+): string {
+  if (moneyTotalKeys.has(key.toLowerCase())) {
+    return new Intl.NumberFormat("en-ZA", {
+      style: "currency",
+      currency: "ZAR",
+      maximumFractionDigits: 0,
+    }).format(value);
+  }
+
+  return value.toLocaleString("en-ZA");
+}
+
+function humanLabel(value: string): string {
+  return value
+    .replace(/_/g, " ")
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function resultFromMessage(
@@ -120,9 +164,12 @@ function AskChart({
     }
 
     const columns = Object.keys(rows[0]);
+
     const labelColumn =
       columns.find((column) =>
-        ["Doctor", "Payer", "Practice", "Period"].includes(column),
+        ["Doctor", "Payer", "Practice", "Period"].includes(
+          column,
+        ),
       ) || columns[0];
 
     const metric =
@@ -130,7 +177,9 @@ function AskChart({
         columns.includes(candidate),
       ) ||
       columns.find((column) =>
-        rows.some((row) => numericValue(row[column]) > 0),
+        rows.some(
+          (row) => numericValue(row[column]) > 0,
+        ),
       );
 
     if (!metric) {
@@ -146,36 +195,57 @@ function AskChart({
       }))
       .filter((item) => item.value >= 0);
 
-    const maximum = Math.max(
-      1,
-      ...values.map((item) => item.value),
-    );
-
     return {
       metric,
       values,
-      maximum,
+      maximum: Math.max(
+        1,
+        ...values.map((item) => item.value),
+      ),
     };
   }, [rows]);
 
   if (!chart || !chart.values.length) {
-    return null;
+    return (
+      <section className="ask-v2-panel ask-v2-chart-panel">
+        <span className="eyebrow">Automatic visual</span>
+        <h3>No chart required</h3>
+        <p>
+          This answer is best represented by the verified
+          result table.
+        </p>
+      </section>
+    );
   }
 
   return (
-    <section className="ask-command-chart" aria-label={`${chart.metric} chart`}>
-      <div className="ask-command-section-heading">
+    <section
+      className="ask-v2-panel ask-v2-chart-panel"
+      aria-label={`${chart.metric} chart`}
+    >
+      <div className="ask-v2-panel-heading">
         <div>
-          <span className="eyebrow">Automatic visual</span>
+          <span className="eyebrow">
+            Automatic visual
+          </span>
           <h3>{chart.metric} comparison</h3>
         </div>
+        <span className="ask-v2-mini-badge">
+          Top {chart.values.length}
+        </span>
       </div>
 
-      <div className="ask-command-bars">
+      <div className="ask-v2-bars">
         {chart.values.map((item) => (
-          <div className="ask-command-bar-row" key={`${item.label}-${item.display}`}>
-            <span title={item.label}>{item.label}</span>
-            <div className="ask-command-bar-track">
+          <div
+            className="ask-v2-bar-row"
+            key={`${item.label}-${item.display}`}
+          >
+            <span title={item.label}>
+              {item.label}
+            </span>
+
+            <div className="ask-v2-bar-track">
               <i
                 style={{
                   width: `${Math.max(
@@ -185,6 +255,7 @@ function AskChart({
                 }}
               />
             </div>
+
             <strong>{item.display}</strong>
           </div>
         ))}
@@ -193,50 +264,73 @@ function AskChart({
   );
 }
 
-function AnswerEvidence({
+function KeyMetrics({
   result,
 }: {
   result: AskResult;
 }) {
-  const totalEntries = Object.entries(result.totals);
+  const totals = Object.entries(result.totals);
 
   return (
-    <details className="ask-command-evidence">
-      <summary>Show how this was calculated</summary>
+    <section className="ask-v2-panel ask-v2-metrics-panel">
+      <div className="ask-v2-panel-heading">
+        <div>
+          <span className="eyebrow">
+            Verified key figures
+          </span>
+          <h3>At a glance</h3>
+        </div>
+      </div>
 
-      <div className="ask-command-evidence-grid">
-        <div>
-          <span>Analysis type</span>
-          <strong>{result.plan.intent.replace(/_/g, " ")}</strong>
-        </div>
-        <div>
-          <span>Period</span>
+      <div className="ask-v2-metric-grid">
+        <article>
+          <span>Results</span>
           <strong>
-            {result.plan.from} to {result.plan.to}
+            {result.rows.length.toLocaleString("en-ZA")}
           </strong>
-        </div>
-        <div>
-          <span>Threshold</span>
-          <strong>
-            {result.plan.threshold > 0
-              ? `R ${result.plan.threshold.toLocaleString("en-ZA")}`
-              : "None"}
-          </strong>
-        </div>
-        <div>
-          <span>Matching rows</span>
-          <strong>{result.rows.length}</strong>
-        </div>
-        {totalEntries.map(([key, value]) => (
-          <div key={key}>
-            <span>{key.replace(/([A-Z])/g, " $1")}</span>
-            <strong>{value.toLocaleString("en-ZA")}</strong>
-          </div>
+        </article>
+
+        {totals.slice(0, 5).map(([key, value]) => (
+          <article key={key}>
+            <span>{humanLabel(key)}</span>
+            <strong>{formatTotal(key, value)}</strong>
+          </article>
         ))}
       </div>
 
-      <p>{result.verification}</p>
-    </details>
+      <details className="ask-v2-evidence">
+        <summary>Show how this was calculated</summary>
+
+        <div className="ask-v2-evidence-body">
+          <dl>
+            <div>
+              <dt>Analysis</dt>
+              <dd>{humanLabel(result.plan.intent)}</dd>
+            </div>
+            <div>
+              <dt>Period</dt>
+              <dd>
+                {result.plan.from} to {result.plan.to}
+              </dd>
+            </div>
+            <div>
+              <dt>Threshold</dt>
+              <dd>
+                {result.plan.threshold > 0
+                  ? new Intl.NumberFormat("en-ZA", {
+                      style: "currency",
+                      currency: "ZAR",
+                      maximumFractionDigits: 0,
+                    }).format(result.plan.threshold)
+                  : "None"}
+              </dd>
+            </div>
+          </dl>
+
+          <p>{result.verification}</p>
+        </div>
+      </details>
+    </section>
   );
 }
 
@@ -250,9 +344,9 @@ function VerifiedResult({
     : [];
 
   return (
-    <div className="ask-command-result">
-      <section className="content-card ask-mfi-answer-card">
-        <div className="ask-mfi-answer-heading">
+    <div className="ask-v2-result">
+      <section className="content-card ask-v2-answer-card">
+        <div className="ask-v2-answer-heading">
           <div>
             <span className="eyebrow">
               Intelligent verified answer
@@ -260,12 +354,12 @@ function VerifiedResult({
             <h2>MFI analysis</h2>
           </div>
 
-          <span className="count-pill">
+          <span className="ask-v2-period">
             {result.plan.from} to {result.plan.to}
           </span>
         </div>
 
-        <div className="ask-mfi-answer">
+        <div className="ask-v2-answer-copy">
           {result.answer
             .split(/\n+/)
             .filter(Boolean)
@@ -275,14 +369,15 @@ function VerifiedResult({
               </p>
             ))}
         </div>
-
-        <AnswerEvidence result={result} />
       </section>
 
-      <AskChart rows={result.rows} />
+      <div className="ask-v2-insight-grid">
+        <AskChart rows={result.rows} />
+        <KeyMetrics result={result} />
+      </div>
 
-      <section className="content-card ask-mfi-results-card">
-        <div className="card-heading financial-heading">
+      <section className="content-card ask-v2-results-card">
+        <div className="ask-v2-results-heading">
           <div>
             <span className="eyebrow">
               Supporting database records
@@ -291,14 +386,16 @@ function VerifiedResult({
           </div>
 
           <span className="count-pill">
-            {result.rows.length} verified{" "}
-            {result.rows.length === 1 ? "result" : "results"}
+            {result.rows.length}{" "}
+            {result.rows.length === 1
+              ? "result"
+              : "results"}
           </span>
         </div>
 
         {result.rows.length ? (
-          <div className="ask-mfi-table-wrap">
-            <table className="ask-mfi-table">
+          <div className="ask-v2-table-wrap">
+            <table className="ask-v2-table">
               <thead>
                 <tr>
                   {columns.map((column) => (
@@ -331,31 +428,57 @@ function VerifiedResult({
 }
 
 export default function AskMfiClient() {
-  const [question, setQuestion] = useState(suggestions[0]);
-  const [threads, setThreads] = useState<AskThread[]>([]);
-  const [activeThreadId, setActiveThreadId] = useState<string | null>(
-    null,
+  const [question, setQuestion] = useState(
+    suggestions[0],
   );
-  const [messages, setMessages] = useState<StoredMessage[]>([]);
-  const [latestResult, setLatestResult] = useState<AskResult | null>(
-    null,
+  const [threads, setThreads] = useState<AskThread[]>(
+    [],
   );
+  const [threadSearch, setThreadSearch] = useState("");
+  const [activeThreadId, setActiveThreadId] = useState<
+    string | null
+  >(null);
+  const [messages, setMessages] = useState<
+    StoredMessage[]
+  >([]);
+  const [latestResult, setLatestResult] =
+    useState<AskResult | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [historyLoading, setHistoryLoading] = useState(true);
+  const [historyLoading, setHistoryLoading] =
+    useState(true);
+
+  const filteredThreads = useMemo(() => {
+    const search = threadSearch.trim().toLowerCase();
+
+    if (!search) {
+      return threads;
+    }
+
+    return threads.filter((thread) =>
+      thread.title.toLowerCase().includes(search),
+    );
+  }, [threadSearch, threads]);
 
   async function loadThreads() {
     try {
-      const response = await fetch("/api/admin/ask/threads", {
-        cache: "no-store",
-      });
+      const response = await fetch(
+        "/api/admin/ask/threads",
+        {
+          cache: "no-store",
+        },
+      );
+
       const data = (await response.json()) as {
         threads?: AskThread[];
         error?: string;
       };
 
       if (!response.ok) {
-        throw new Error(data.error || "History could not be loaded.");
+        throw new Error(
+          data.error ||
+            "Conversation history could not be loaded.",
+        );
       }
 
       setThreads(data.threads ?? []);
@@ -363,7 +486,7 @@ export default function AskMfiClient() {
       setError(
         requestError instanceof Error
           ? requestError.message
-          : "History could not be loaded.",
+          : "Conversation history could not be loaded.",
       );
     } finally {
       setHistoryLoading(false);
@@ -376,8 +499,12 @@ export default function AskMfiClient() {
 
     try {
       const response = await fetch(
-        `/api/admin/ask/threads/${encodeURIComponent(threadId)}`,
-        { cache: "no-store" },
+        `/api/admin/ask/threads/${encodeURIComponent(
+          threadId,
+        )}`,
+        {
+          cache: "no-store",
+        },
       );
 
       const data = (await response.json()) as {
@@ -387,24 +514,33 @@ export default function AskMfiClient() {
       };
 
       if (!response.ok) {
-        throw new Error(data.error || "Conversation could not be loaded.");
+        throw new Error(
+          data.error ||
+            "The conversation could not be loaded.",
+        );
       }
 
       const loadedMessages = data.messages ?? [];
+
       setActiveThreadId(threadId);
       setMessages(loadedMessages);
 
       const finalAnswer = [...loadedMessages]
         .reverse()
         .map(resultFromMessage)
-        .find(Boolean);
+        .find(
+          (
+            result,
+          ): result is AskResult => result !== null,
+        );
 
       setLatestResult(finalAnswer ?? null);
+      setQuestion("");
     } catch (requestError) {
       setError(
         requestError instanceof Error
           ? requestError.message
-          : "Conversation could not be loaded.",
+          : "The conversation could not be loaded.",
       );
     } finally {
       setHistoryLoading(false);
@@ -438,20 +574,6 @@ export default function AskMfiClient() {
     setLoading(true);
     setError("");
 
-    const temporaryUserMessage: StoredMessage = {
-      id: `pending-${Date.now()}`,
-      threadId: activeThreadId ?? "",
-      role: "user",
-      content: cleanQuestion,
-      plan: null,
-      rows: [],
-      totals: {},
-      verification: null,
-      createdAt: new Date().toISOString(),
-    };
-
-    setMessages((current) => [...current, temporaryUserMessage]);
-
     try {
       const response = await fetch("/api/admin/ask", {
         method: "POST",
@@ -477,6 +599,7 @@ export default function AskMfiClient() {
       }
 
       const result = data as AskResult;
+
       setActiveThreadId(result.threadId);
       setLatestResult(result);
       setQuestion("");
@@ -486,9 +609,6 @@ export default function AskMfiClient() {
         loadThreads(),
       ]);
     } catch (requestError) {
-      setMessages((current) =>
-        current.filter((message) => message.id !== temporaryUserMessage.id),
-      );
       setError(
         requestError instanceof Error
           ? requestError.message
@@ -500,11 +620,13 @@ export default function AskMfiClient() {
   }
 
   return (
-    <div className="ask-command-layout">
-      <aside className="content-card ask-command-history">
-        <div className="ask-command-history-heading">
+    <div className="ask-v2-workspace">
+      <aside className="ask-v2-thread-rail">
+        <div className="ask-v2-thread-header">
           <div>
-            <span className="eyebrow">Saved analysis</span>
+            <span className="eyebrow">
+              Saved analysis
+            </span>
             <h2>Conversations</h2>
           </div>
 
@@ -517,82 +639,95 @@ export default function AskMfiClient() {
           </button>
         </div>
 
+        <label className="ask-v2-thread-search">
+          <span className="sr-only">
+            Search conversations
+          </span>
+          <input
+            type="search"
+            value={threadSearch}
+            onChange={(event) =>
+              setThreadSearch(event.target.value)
+            }
+            placeholder="Search conversations"
+          />
+        </label>
+
         {historyLoading && !threads.length ? (
-          <p className="ask-command-muted">Loading history…</p>
-        ) : threads.length ? (
-          <div className="ask-command-thread-list">
-            {threads.map((thread) => (
+          <p className="ask-v2-muted">
+            Loading history…
+          </p>
+        ) : filteredThreads.length ? (
+          <div className="ask-v2-thread-list">
+            {filteredThreads.map((thread) => (
               <button
                 type="button"
                 key={thread.id}
                 className={
-                  thread.id === activeThreadId ? "is-active" : undefined
+                  thread.id === activeThreadId
+                    ? "is-active"
+                    : undefined
                 }
-                onClick={() => void openThread(thread.id)}
+                onClick={() =>
+                  void openThread(thread.id)
+                }
               >
                 <strong>{thread.title}</strong>
-                <small>{dateTimeLabel(thread.updatedAt)}</small>
+                <small>
+                  {dateTimeLabel(thread.updatedAt)}
+                </small>
               </button>
             ))}
           </div>
         ) : (
-          <p className="ask-command-muted">
-            Your verified MFI analyses will appear here.
+          <p className="ask-v2-muted">
+            No saved conversations match.
           </p>
         )}
       </aside>
 
-      <div className="ask-command-main">
-        {messages.length ? (
-          <section className="content-card ask-command-conversation">
-            <div className="ask-command-section-heading">
-              <div>
-                <span className="eyebrow">Follow-up context</span>
-                <h2>Current conversation</h2>
-              </div>
+      <main className="ask-v2-main">
+        <section className="content-card ask-v2-composer">
+          <div className="ask-v2-composer-heading">
+            <div>
+              <span className="eyebrow">
+                Natural-language financial intelligence
+              </span>
+              <h2>
+                {activeThreadId
+                  ? "Ask a follow-up"
+                  : "Ask the MFI database"}
+              </h2>
+              <p>
+                AI interprets the question. Every doctor,
+                amount and result is calculated from stored
+                MFI records.
+              </p>
             </div>
 
-            <div className="ask-command-message-list">
-              {messages.map((message) => (
-                <article
-                  className={`ask-command-message ${message.role}`}
-                  key={message.id}
-                >
-                  <span>
-                    {message.role === "user" ? "You" : "MFI"}
-                  </span>
-                  <p>{message.content}</p>
-                </article>
-              ))}
-            </div>
-          </section>
-        ) : null}
-
-        <section className="content-card ask-mfi-question-card">
-          <span className="eyebrow">
-            Natural-language financial intelligence
-          </span>
-          <h2>
-            {activeThreadId
-              ? "Ask a follow-up question"
-              : "Ask the MFI database"}
-          </h2>
-          <p>
-            Every name and financial amount is calculated from stored
-            database records. The conversation and its evidence are saved
-            for MFI staff.
-          </p>
+            {activeThreadId ? (
+              <span className="ask-v2-active-thread">
+                Active conversation
+              </span>
+            ) : null}
+          </div>
 
           <form onSubmit={submitQuestion}>
             <textarea
               value={question}
-              onChange={(event) => setQuestion(event.target.value)}
+              onChange={(event) =>
+                setQuestion(event.target.value)
+              }
               maxLength={500}
-              rows={4}
-              placeholder="Example: Which of those doctors still have outstanding balances?"
+              rows={3}
+              placeholder={
+                activeThreadId
+                  ? "Ask a follow-up, for example: Which of those doctors still owe money?"
+                  : "Ask a financial question in normal language."
+              }
             />
 
-            <div className="ask-mfi-form-footer">
+            <div className="ask-v2-composer-footer">
               <small>{question.length}/500</small>
 
               <button
@@ -601,7 +736,7 @@ export default function AskMfiClient() {
                 disabled={loading}
               >
                 {loading
-                  ? "Analysing verified records..."
+                  ? "Analysing records..."
                   : activeThreadId
                     ? "Ask follow-up"
                     : "Ask MFI"}
@@ -610,31 +745,71 @@ export default function AskMfiClient() {
           </form>
 
           {error ? (
-            <div className="error-banner ask-mfi-error">
+            <div className="error-banner ask-v2-error">
               {error}
             </div>
           ) : null}
 
           {!activeThreadId ? (
-            <div className="ask-mfi-suggestions">
-              <span>Suggested questions</span>
-              <div>
-                {suggestions.map((suggestion) => (
-                  <button
-                    type="button"
-                    key={suggestion}
-                    onClick={() => setQuestion(suggestion)}
-                  >
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
+            <div className="ask-v2-suggestions">
+              {suggestions.map((suggestion) => (
+                <button
+                  type="button"
+                  key={suggestion}
+                  onClick={() =>
+                    setQuestion(suggestion)
+                  }
+                >
+                  {suggestion}
+                </button>
+              ))}
             </div>
           ) : null}
         </section>
 
-        {latestResult ? <VerifiedResult result={latestResult} /> : null}
-      </div>
+        {latestResult ? (
+          <VerifiedResult result={latestResult} />
+        ) : (
+          <section className="content-card ask-v2-empty-workspace">
+            <span className="eyebrow">
+              Ready for analysis
+            </span>
+            <h2>
+              Ask what happened, where the money is,
+              and what needs attention.
+            </h2>
+            <p>
+              Results will appear here as a verified
+              executive answer, chart, key figures and
+              supporting records.
+            </p>
+          </section>
+        )}
+
+        {messages.length ? (
+          <details className="content-card ask-v2-transcript">
+            <summary>
+              Conversation history ({messages.length})
+            </summary>
+
+            <div className="ask-v2-message-list">
+              {messages.map((message) => (
+                <article
+                  className={`ask-v2-message ${message.role}`}
+                  key={message.id}
+                >
+                  <span>
+                    {message.role === "user"
+                      ? "You"
+                      : "MFI"}
+                  </span>
+                  <p>{message.content}</p>
+                </article>
+              ))}
+            </div>
+          </details>
+        ) : null}
+      </main>
     </div>
   );
 }
