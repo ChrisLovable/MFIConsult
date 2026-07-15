@@ -45,6 +45,10 @@ export default async function AdminLoginPage({
             </p>
           </div>
         </div>
+                <div className="production-test-badge">
+          GREEN PRODUCTION TEST
+        </div>
+
         <h1>Welcome back</h1>
         <p>
           Manage doctors, billing rules,
