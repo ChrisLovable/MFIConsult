@@ -21,7 +21,7 @@ const navigation = [
   {
     href: "/admin/ask",
     label: "Ask MFI",
-    number: "03",
+    symbol: "03",
   },
 ];
 
