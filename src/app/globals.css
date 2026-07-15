@@ -563,3 +563,277 @@ a {
     font-size: 8px;
   }
 }
+/* ASK MFI COMMAND CENTRE RELEASE 1 */
+
+.ask-command-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.ask-command-main {
+  display: grid;
+  min-width: 0;
+  gap: 22px;
+}
+
+.ask-command-history {
+  position: sticky;
+  top: 20px;
+  max-height: calc(100vh - 40px);
+  overflow: hidden;
+}
+
+.ask-command-history-heading,
+.ask-command-section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ask-command-history-heading h2,
+.ask-command-section-heading h2,
+.ask-command-section-heading h3 {
+  margin: 4px 0 0;
+}
+
+.ask-command-history-heading .secondary-button {
+  min-height: 36px;
+  padding: 0 12px;
+}
+
+.ask-command-thread-list {
+  display: grid;
+  gap: 7px;
+  max-height: calc(100vh - 155px);
+  margin-top: 18px;
+  overflow-y: auto;
+}
+
+.ask-command-thread-list button {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #dce7e3;
+  border-radius: 10px;
+  background: #fff;
+  color: #243b35;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ask-command-thread-list button:hover,
+.ask-command-thread-list button.is-active {
+  border-color: #2f8164;
+  background: #eef8f3;
+}
+
+.ask-command-thread-list strong {
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ask-command-thread-list small,
+.ask-command-muted {
+  color: #6a7975;
+  font-size: 10px;
+}
+
+.ask-command-conversation {
+  padding-bottom: 18px;
+}
+
+.ask-command-message-list {
+  display: grid;
+  gap: 10px;
+  max-height: 350px;
+  margin-top: 18px;
+  padding-right: 5px;
+  overflow-y: auto;
+}
+
+.ask-command-message {
+  max-width: 88%;
+  padding: 11px 13px;
+  border-radius: 13px;
+}
+
+.ask-command-message.user {
+  justify-self: end;
+  background: #173f34;
+  color: #fff;
+}
+
+.ask-command-message.assistant {
+  justify-self: start;
+  border: 1px solid #d8e5e0;
+  background: #f5faf7;
+  color: #253c35;
+}
+
+.ask-command-message > span {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  opacity: 0.7;
+  text-transform: uppercase;
+}
+
+.ask-command-message p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.ask-command-result {
+  display: grid;
+  gap: 22px;
+}
+
+.ask-command-chart {
+  padding: 22px 24px;
+  border: 1px solid #dce7e3;
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(22, 58, 47, 0.05);
+}
+
+.ask-command-bars {
+  display: grid;
+  gap: 11px;
+  margin-top: 20px;
+}
+
+.ask-command-bar-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 190px) minmax(100px, 1fr) minmax(80px, auto);
+  gap: 12px;
+  align-items: center;
+}
+
+.ask-command-bar-row > span {
+  overflow: hidden;
+  color: #314640;
+  font-size: 11px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ask-command-bar-row > strong {
+  color: #173c31;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.ask-command-bar-track {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e8f0ed;
+}
+
+.ask-command-bar-track i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2d8464, #62ae8e);
+}
+
+.ask-command-evidence {
+  margin-top: 20px;
+  margin-left: 8px;
+  border: 1px solid #d5e4df;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.ask-command-evidence summary {
+  padding: 13px 15px;
+  color: #174435;
+  font-size: 12px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.ask-command-evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0 15px 14px;
+}
+
+.ask-command-evidence-grid > div {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  border-radius: 9px;
+  background: #f3f8f6;
+}
+
+.ask-command-evidence-grid span {
+  color: #687973;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.ask-command-evidence-grid strong {
+  color: #213a32;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.ask-command-evidence > p {
+  margin: 0;
+  padding: 0 15px 15px;
+  color: #60716c;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+@media (max-width: 1050px) {
+  .ask-command-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .ask-command-history {
+    position: static;
+    max-height: none;
+  }
+
+  .ask-command-thread-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-height: 260px;
+  }
+}
+
+@media (max-width: 720px) {
+  .ask-command-thread-list,
+  .ask-command-evidence-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ask-command-bar-row {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .ask-command-bar-row > strong {
+    text-align: left;
+  }
+
+  .ask-command-message {
+    max-width: 96%;
+  }
+}
