@@ -4,6 +4,9 @@ import {
   commandCentreChange,
   getDailyCommandCentre,
 } from "@/lib/daily-command-centre";
+import {
+  getRecentInvoiceActions,
+} from "@/lib/instant-invoice";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +28,16 @@ function dateTime(value: string): string {
   }).format(new Date(value));
 }
 
+
+function formatDateTime(value: string): string {
+  return new Intl.DateTimeFormat("en-ZA", {
+    timeZone: "Africa/Johannesburg",
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(value));
+}
 function statusClass(status: string): string {
   return `status-badge status-${status.replaceAll("_", "-")}`;
 }
@@ -38,6 +51,10 @@ function changeLabel(current: number, previous: number): string {
 
 export default async function AdminDashboardPage() {
   const data = await getDailyCommandCentre();
+  const recentSubmissions =
+    await getRecentInvoiceActions(
+      data.recentSubmissions,
+    );
   const maxPayer = Math.max(1, ...data.topPayers.map((item) => item.outstanding));
   const maxDoctor = Math.max(1, ...data.topDoctors.map((item) => item.invoiced));
 
@@ -152,7 +169,7 @@ export default async function AdminDashboardPage() {
           <div className="command-ranking-list">
             {data.topPayers.length ? data.topPayers.map((payer) => (
               <div className="command-ranking-row" key={payer.payer}>
-                <div><strong>{payer.payer}</strong><small>{payer.invoiceCount} invoices · {payer.sharePercent.toFixed(1)}%</small></div>
+                <div><strong>{payer.payer}</strong><small>{payer.invoiceCount} invoices Ãƒâ€šÃ‚Â· {payer.sharePercent.toFixed(1)}%</small></div>
                 <i><em style={{ width: `${(payer.outstanding / maxPayer) * 100}%` }} /></i><b>{money(payer.outstanding)}</b>
               </div>
             )) : <div className="empty-state">No outstanding payer balances.</div>}
@@ -167,7 +184,7 @@ export default async function AdminDashboardPage() {
           <div className="command-ranking-list">
             {data.topDoctors.length ? data.topDoctors.map((doctor) => (
               <Link href={`/admin/doctors/${doctor.doctorId}/financial`} className="command-ranking-row" key={doctor.doctorId}>
-                <div><strong>{doctor.doctor}</strong><small>{doctor.practice || "Practice not specified"} · {doctor.invoiceCount} invoices</small></div>
+                <div><strong>{doctor.doctor}</strong><small>{doctor.practice || "Practice not specified"} Ãƒâ€šÃ‚Â· {doctor.invoiceCount} invoices</small></div>
                 <i><em style={{ width: `${(doctor.invoiced / maxDoctor) * 100}%` }} /></i><b>{money(doctor.invoiced)}</b>
               </Link>
             )) : <div className="empty-state">No invoices were issued this month.</div>}
@@ -179,7 +196,7 @@ export default async function AdminDashboardPage() {
           <div className="command-movement-list">
             {data.doctorMovements.length ? data.doctorMovements.slice(0, 6).map((movement) => (
               <Link href={`/admin/doctors/${movement.doctorId}/financial`} className="command-movement-row" key={movement.doctorId}>
-                <div><strong>{movement.doctor}</strong><small>{money(movement.previousAmount)} → {money(movement.currentAmount)}</small></div>
+                <div><strong>{movement.doctor}</strong><small>{money(movement.previousAmount)} ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ {money(movement.currentAmount)}</small></div>
                 <b>{movement.changePercent === null ? "New" : `${movement.changePercent > 0 ? "+" : ""}${movement.changePercent.toFixed(1)}%`}</b>
               </Link>
             )) : <div className="empty-state">No material doctor movements detected.</div>}
@@ -189,13 +206,143 @@ export default async function AdminDashboardPage() {
       </section>
 
       <section className="content-card command-activity-card">
-        <div className="command-section-heading"><div><span className="eyebrow">Live operational activity</span><h2>Recent submissions</h2></div></div>
-        <div className="table-wrap"><table className="admin-table"><thead><tr><th>Reference</th><th>Doctor</th><th>Status</th><th>Received</th></tr></thead><tbody>
-          {data.recentSubmissions.length ? data.recentSubmissions.map((submission) => (
-            <tr key={submission.id}><td><code>{submission.reference}</code></td><td>{submission.doctor || "Unknown doctor"}</td><td><span className={statusClass(submission.status)}>{submission.status.replaceAll("_", " ")}</span></td><td>{dateTime(submission.createdAt)}</td></tr>
-          )) : <tr><td colSpan={4} className="empty-cell">No consultations received yet.</td></tr>}
-        </tbody></table></div>
-      </section>
-    </>
+        <div className="card-heading">
+          <div>
+            <span className="eyebrow">
+              Live operational activity
+            </span>
+            <h2>Recent submissions</h2>
+          </div>
+        </div>
+
+        <div className="instant-overview-note">
+          Completed consultations with a calculated amount
+          can now be turned into a draft invoice instantly.
+        </div>
+
+        <div className="table-wrap">
+          <table className="admin-table instant-overview-table">
+            <thead>
+              <tr>
+                <th>Reference</th>
+                <th>Doctor</th>
+                <th>Status</th>
+                <th>Amount</th>
+                <th>Received</th>
+                <th>Invoice</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {recentSubmissions.length ? (
+                recentSubmissions.map((submission) => {
+                  const ready =
+                    submission.status === "email_sent" &&
+                    [
+                      "ready_to_invoice",
+                      "not_invoiced",
+                    ].includes(
+                      submission.financialStatus,
+                    );
+
+                  return (
+                    <tr key={submission.id}>
+                      <td>
+                        <code>{submission.reference}</code>
+                      </td>
+
+                      <td>
+                        {submission.doctor ||
+                          "Unknown doctor"}
+                      </td>
+
+                      <td>
+                        <span
+                          className={statusClass(
+                            submission.status,
+                          )}
+                        >
+                          {submission.status.replaceAll(
+                            "_",
+                            " ",
+                          )}
+                        </span>
+                      </td>
+
+                      <td>
+                        {submission.billableAmount > 0
+                          ? money(
+                              submission.billableAmount,
+                            )
+                          : "Ã¢â‚¬â€"}
+                      </td>
+
+                      <td>
+                        {formatDateTime(
+                          submission.createdAt,
+                        )}
+                      </td>
+
+                      <td>
+                        {submission.invoiceId ? (
+                          <Link
+                            href={`/admin/invoices/${submission.invoiceId}`}
+                            className="secondary-button instant-table-button"
+                          >
+                            View invoice
+                          </Link>
+                        ) : ready &&
+                          submission.billableAmount > 0 ? (
+                          <form
+                            method="post"
+                            action="/api/admin/financial/invoices/instant"
+                            className="instant-table-form"
+                          >
+                            <input
+                              type="hidden"
+                              name="submission_id"
+                              value={submission.id}
+                            />
+
+                            <input
+                              type="hidden"
+                              name="return_to"
+                              value="/admin"
+                            />
+
+                            <button
+                              type="submit"
+                              className="primary-button instant-table-button"
+                            >
+                              Create invoice
+                            </button>
+                          </form>
+                        ) : ready ? (
+                          <span className="instant-rate-required">
+                            Rate required
+                          </span>
+                        ) : (
+                          <span className="instant-not-ready">
+                            Not ready
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="empty-cell"
+                  >
+                    No consultations received yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section></>
   );
 }

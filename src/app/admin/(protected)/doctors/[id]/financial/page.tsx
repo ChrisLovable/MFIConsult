@@ -27,6 +27,24 @@ function dateLabel(value: string | null): string {
   }).format(new Date(`${value}T00:00:00`));
 }
 
+function invoiceErrorMessage(
+  error: string | undefined,
+): string {
+  if (error === "amount") {
+    return "The consultation has no positive calculated amount. Add or correct the doctor tariff before creating the invoice.";
+  }
+
+  if (error === "not-ready") {
+    return "This consultation is not ready to invoice.";
+  }
+
+  if (error === "missing") {
+    return "The consultation record could not be found.";
+  }
+
+  return "The draft invoice could not be created.";
+}
+
 export default async function DoctorFinancialPage({
   params,
   searchParams,
@@ -37,6 +55,7 @@ export default async function DoctorFinancialPage({
     to?: string;
     saved?: string;
     error?: string;
+    invoice_error?: string;
   }>;
 }) {
   const { id } = await params;
@@ -97,6 +116,12 @@ export default async function DoctorFinancialPage({
       {query.error ? (
         <div className="error-banner page-banner">
           The financial record could not be saved.
+        </div>
+      ) : null}
+
+      {query.invoice_error ? (
+        <div className="error-banner page-banner">
+          {invoiceErrorMessage(query.invoice_error)}
         </div>
       ) : null}
 
@@ -162,10 +187,18 @@ export default async function DoctorFinancialPage({
       <section className="content-card financial-section">
         <div className="card-heading financial-heading">
           <div>
-            <span className="eyebrow">Work queue</span>
+            <span className="eyebrow">Instant invoice queue</span>
             <h2>Ready to invoice</h2>
           </div>
           <span className="count-pill">{readySubmissions.length}</span>
+        </div>
+
+        <div className="instant-invoice-explainer">
+          <strong>One click creates a complete draft.</strong>
+          <span>
+            The invoice number, service details, tariff lines, payer,
+            total and due date are taken from the received consultation.
+          </span>
         </div>
 
         {readySubmissions.length ? (
@@ -191,50 +224,37 @@ export default async function DoctorFinancialPage({
                   ) : null}
                 </div>
 
-                <form
-                  method="post"
-                  action="/api/admin/financial/invoices"
-                  className="invoice-create-form"
-                >
-                  <input type="hidden" name="doctor_id" value={id} />
-                  <input
-                    type="hidden"
-                    name="submission_id"
-                    value={submission.id}
-                  />
-                  <input type="hidden" name="from" value={from} />
-                  <input type="hidden" name="to" value={to} />
-
-                  <label>
-                    <span>Invoice number</span>
-                    <input
-                      name="invoice_number"
-                      required
-                      placeholder="INV-1048"
-                    />
-                  </label>
-                  <label>
-                    <span>Invoice amount</span>
-                    <input
-                      name="amount"
-                      type="number"
-                      min="0.01"
-                      step="0.01"
-                      required
-                      defaultValue={
-                        submission.amount > 0 ? submission.amount : undefined
-                      }
-                      placeholder="850.00"
-                    />
-                  </label>
-                  <label>
-                    <span>Due date</span>
-                    <input name="due_date" type="date" />
-                  </label>
-                  <button type="submit" className="primary-button">
-                    Mark invoiced
-                  </button>
-                </form>
+                <div className="instant-invoice-action">
+                  {submission.amount > 0 ? (
+                    <form
+                      method="post"
+                      action="/api/admin/financial/invoices/instant"
+                    >
+                      <input
+                        type="hidden"
+                        name="submission_id"
+                        value={submission.id}
+                      />
+                      <input
+                        type="hidden"
+                        name="return_to"
+                        value={`/admin/doctors/${id}/financial?from=${encodeURIComponent(
+                          from,
+                        )}&to=${encodeURIComponent(to)}`}
+                      />
+                      <button type="submit" className="primary-button">
+                        Create draft invoice
+                      </button>
+                    </form>
+                  ) : (
+                    <div className="instant-invoice-disabled">
+                      <strong>Rate required</strong>
+                      <span>
+                        Add a tariff or calculated amount before invoicing.
+                      </span>
+                    </div>
+                  )}
+                </div>
               </article>
             ))}
           </div>
@@ -273,7 +293,12 @@ export default async function DoctorFinancialPage({
                 dashboard.invoices.map((invoice) => (
                   <tr key={invoice.id}>
                     <td>
-                      <strong>{invoice.invoiceNumber}</strong>
+                      <Link
+                        href={`/admin/invoices/${invoice.id}`}
+                        className="invoice-number-link"
+                      >
+                        {invoice.invoiceNumber}
+                      </Link>
                       <small>Due {dateLabel(invoice.dueDate)}</small>
                     </td>
                     <td>{dateLabel(invoice.invoiceDate)}</td>
