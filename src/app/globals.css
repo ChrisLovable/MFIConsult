@@ -467,3 +467,99 @@ a {
     padding-left: 4px;
   }
 }
+
+/* ASK MFI TABLE FIT V4 */
+
+.ask-mfi-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: visible;
+  margin: 20px 0 0;
+}
+
+.ask-mfi-table {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+  white-space: normal;
+}
+
+.ask-mfi-table th,
+.ask-mfi-table td {
+  padding: 11px 7px;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  vertical-align: middle;
+}
+
+.ask-mfi-table th {
+  font-size: 9px;
+  line-height: 1.25;
+  white-space: normal;
+}
+
+.ask-mfi-table td {
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.ask-mfi-table th:nth-child(1),
+.ask-mfi-table td:nth-child(1) {
+  width: 18%;
+}
+
+.ask-mfi-table th:nth-child(2),
+.ask-mfi-table td:nth-child(2) {
+  width: 22%;
+}
+
+.ask-mfi-table th:nth-child(3),
+.ask-mfi-table td:nth-child(3) {
+  width: 11%;
+}
+
+.ask-mfi-table th:nth-child(4),
+.ask-mfi-table td:nth-child(4) {
+  width: 10%;
+}
+
+.ask-mfi-table th:nth-child(5),
+.ask-mfi-table td:nth-child(5) {
+  width: 12%;
+}
+
+.ask-mfi-table th:nth-child(6),
+.ask-mfi-table td:nth-child(6) {
+  width: 10%;
+}
+
+.ask-mfi-table th:nth-child(7),
+.ask-mfi-table td:nth-child(7) {
+  width: 11%;
+}
+
+.ask-mfi-table th:nth-child(8),
+.ask-mfi-table td:nth-child(8) {
+  width: 6%;
+  text-align: center;
+}
+
+.ask-mfi-table td:nth-child(n + 3) {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 900px) {
+  .ask-mfi-table th,
+  .ask-mfi-table td {
+    padding: 9px 5px;
+  }
+
+  .ask-mfi-table td {
+    font-size: 10px;
+  }
+
+  .ask-mfi-table th {
+    font-size: 8px;
+  }
+}
