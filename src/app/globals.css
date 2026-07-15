@@ -1642,3 +1642,106 @@ a {
     min-width: 620px;
   }
 }
+
+/* ASK MFI COMPACT TYPOGRAPHY V2.2 */
+
+.ask-v2-page-header {
+  margin-bottom: 20px;
+}
+
+.ask-v2-page-header h1 {
+  margin-bottom: 8px;
+  font-size: clamp(38px, 4vw, 46px);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+}
+
+.ask-v2-page-header p {
+  max-width: 760px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.ask-v2-page-header .eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.16em;
+}
+
+.ask-v2-thread-header h2 {
+  overflow: visible;
+  font-size: 18px;
+  line-height: 1.15;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.ask-v2-thread-header .eyebrow {
+  font-size: 8px;
+  letter-spacing: 0.14em;
+}
+
+.ask-v2-thread-search .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.ask-v2-composer-heading h2 {
+  font-size: 22px;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+
+.ask-v2-composer-heading .eyebrow {
+  font-size: 8px;
+  letter-spacing: 0.14em;
+}
+
+.ask-v2-composer-heading p {
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.ask-v2-composer textarea {
+  min-height: 82px;
+  font-size: 13px;
+}
+
+.ask-v2-composer .primary-button {
+  min-height: 42px;
+  padding: 0 18px;
+  font-size: 14px;
+}
+
+.ask-v2-suggestions button {
+  padding: 6px 9px;
+  font-size: 9px;
+  line-height: 1.25;
+}
+
+.ask-v2-thread-search input {
+  font-size: 11px;
+}
+
+.ask-v2-thread-list strong {
+  font-size: 10px;
+}
+
+.ask-v2-thread-list small {
+  font-size: 8px;
+}
+
+@media (max-width: 700px) {
+  .ask-v2-page-header h1 {
+    font-size: 36px;
+  }
+
+  .ask-v2-composer-heading h2 {
+    font-size: 20px;
+  }
+}
