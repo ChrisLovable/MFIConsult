@@ -207,3 +207,133 @@ a {
     width: 100%;
   }
 }
+
+/* ASK MFI VISUAL POLISH V2 */
+
+.ask-mfi-answer-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #cfe1da;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(236, 248, 242, 0.92),
+      rgba(255, 255, 255, 1) 58%
+    );
+  box-shadow: 0 14px 35px rgba(22, 58, 47, 0.08);
+}
+
+.ask-mfi-answer-card::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 5px;
+  background: #1e7657;
+  content: "";
+}
+
+.ask-mfi-answer-heading {
+  padding-left: 8px;
+}
+
+.ask-mfi-answer-heading h2 {
+  margin-top: 5px;
+  margin-bottom: 0;
+  font-size: clamp(23px, 3vw, 32px);
+  letter-spacing: -0.035em;
+}
+
+.ask-mfi-answer {
+  max-width: 880px;
+  margin-top: 22px;
+  padding-left: 8px;
+  color: #35474b;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.ask-mfi-answer p {
+  margin: 0 0 13px;
+}
+
+.ask-mfi-answer-lead {
+  color: #172c28;
+  font-size: clamp(17px, 2vw, 20px);
+  font-weight: 750;
+  line-height: 1.55;
+}
+
+.ask-mfi-answer-card .summary-trust-note {
+  margin-top: 22px;
+  margin-left: 8px;
+  border: 1px solid #d4e5df;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.ask-mfi-results-card {
+  overflow: hidden;
+  border: 1px solid #dce7e3;
+  box-shadow: 0 10px 28px rgba(22, 58, 47, 0.05);
+}
+
+.ask-mfi-table-wrap {
+  overflow-x: auto;
+  margin: 20px -24px -24px;
+  border-top: 1px solid #e1e9e6;
+}
+
+.ask-mfi-table {
+  min-width: 900px;
+  white-space: nowrap;
+}
+
+.ask-mfi-table th {
+  padding: 13px 16px;
+  background: #f3f7f5;
+  color: #536660;
+  font-size: 10px;
+  letter-spacing: 0.055em;
+}
+
+.ask-mfi-table td {
+  padding: 15px 16px;
+  border-bottom: 1px solid #e7eeeb;
+  background: #fff;
+  color: #263b36;
+  font-size: 13px;
+}
+
+.ask-mfi-table tbody tr:nth-child(even) td {
+  background: #fafcfb;
+}
+
+.ask-mfi-table tbody tr:hover td {
+  background: #edf7f2;
+}
+
+.ask-mfi-table td:first-child {
+  color: #173c31;
+  font-weight: 800;
+}
+
+.ask-mfi-table th:nth-child(n + 3),
+.ask-mfi-table td:nth-child(n + 3) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ask-mfi-results-card .count-pill {
+  white-space: nowrap;
+}
+
+@media (max-width: 680px) {
+  .ask-mfi-table-wrap {
+    margin-right: -18px;
+    margin-left: -18px;
+  }
+
+  .ask-mfi-answer {
+    padding-left: 4px;
+  }
+}

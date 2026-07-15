@@ -757,6 +757,18 @@ function fallbackAnswer(
   } were found for ${plan.from} to ${plan.to}. The figures shown below were calculated directly from stored MFI records.`;
 }
 
+function cleanAiAnswer(value: string): string {
+  return value
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/__(.*?)__/g, "$1")
+    .replace(/^\s*[-*]\s+/gm, "")
+    .replace(/^\s*\|[-:|\s]+\|\s*$/gm, "")
+    .replace(/^\s*\|.*\|\s*$/gm, "")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
 async function intelligentAnswer(
   question: string,
   plan: AskPlan,
@@ -775,25 +787,32 @@ async function intelligentAnswer(
   });
 
   try {
-    return await callClaude(
+    const answer = await callClaude(
       `
 You are the MFI Consult financial intelligence analyst.
 
-Write a concise and intelligent management answer based only on the
-verified facts supplied.
+Write a polished executive management answer based only on the verified
+facts supplied.
 
 Rules:
 - Never invent a doctor, amount, date or percentage.
-- State the date period.
-- Clearly answer the user's question.
-- Highlight the most important result.
-- Mention when no records matched.
-- Keep the answer under 180 words.
+- State the exact date period naturally.
+- Answer the user's question directly.
+- Highlight the most important finding.
+- Write two to four short paragraphs.
+- Use plain text only.
+- Do not use Markdown.
+- Do not use headings, hashes, asterisks or bullet points.
+- Do not create a table or repeat every result row.
+- The application displays the verified table separately.
+- Keep the answer under 140 words.
 - Do not mention SQL, prompts or internal implementation.
 `.trim(),
       facts,
       500,
     );
+
+    return cleanAiAnswer(answer);
   } catch {
     return fallbackAnswer(plan, rows);
   }

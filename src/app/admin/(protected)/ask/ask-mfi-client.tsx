@@ -174,8 +174,17 @@ export default function AskMfiClient() {
               {result.answer
                 .split(/\n+/)
                 .filter(Boolean)
-                .map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
+                .map((paragraph, index) => (
+                  <p
+                    key={`${index}-${paragraph}`}
+                    className={
+                      index === 0
+                        ? "ask-mfi-answer-lead"
+                        : undefined
+                    }
+                  >
+                    {paragraph}
+                  </p>
                 ))}
             </div>
 
@@ -194,7 +203,10 @@ export default function AskMfiClient() {
               </div>
 
               <span className="count-pill">
-                {result.rows.length}
+                {result.rows.length} verified{" "}
+                {result.rows.length === 1
+                  ? "result"
+                  : "results"}
               </span>
             </div>
 
@@ -214,7 +226,7 @@ export default function AskMfiClient() {
                       <tr key={index}>
                         {columns.map((column) => (
                           <td key={column}>
-                            {String(row[column] ?? "—")}
+                            {String(row[column] ?? "â€”")}
                           </td>
                         ))}
                       </tr>
