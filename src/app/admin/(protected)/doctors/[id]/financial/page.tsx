@@ -1,4 +1,5 @@
-﻿import Link from "next/link";
+import Link from "next/link";
+import FinancialPeriodFilter from "./financial-period-filter";
 import { notFound } from "next/navigation";
 import {
   defaultFinancialDates,
@@ -80,19 +81,11 @@ export default async function DoctorFinancialPage({
           </p>
         </div>
 
-        <form method="get" className="financial-date-filter">
-          <label>
-            <span>From</span>
-            <input type="date" name="from" defaultValue={from} />
-          </label>
-          <label>
-            <span>To</span>
-            <input type="date" name="to" defaultValue={to} />
-          </label>
-          <button type="submit" className="secondary-button">
-            Apply period
-          </button>
-        </form>
+        <FinancialPeriodFilter
+          doctorId={id}
+          from={from}
+          to={to}
+        />
       </header>
 
       {query.saved ? (

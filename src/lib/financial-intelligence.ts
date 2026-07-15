@@ -1,4 +1,4 @@
-﻿import { getDoctor } from "@/lib/admin-data";
+import { getDoctor } from "@/lib/admin-data";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
 type JsonRecord = Record<string, unknown>;
@@ -172,10 +172,13 @@ export async function getDoctorFinancialDashboard(
   }
 
   const supabase = getSupabaseAdmin();
-  const start = `${from}T00:00:00.000Z`;
-  const endDate = new Date(`${to}T00:00:00.000Z`);
-  endDate.setUTCDate(endDate.getUTCDate() + 1);
-  const end = endDate.toISOString();
+  const start = new Date(
+    `${from}T00:00:00+02:00`,
+  ).toISOString();
+
+  const end = new Date(
+    new Date(`${to}T00:00:00+02:00`).getTime() + 86400000,
+  ).toISOString();
 
   const [submissionResult, invoiceResult, paymentResult] =
     await Promise.all([
