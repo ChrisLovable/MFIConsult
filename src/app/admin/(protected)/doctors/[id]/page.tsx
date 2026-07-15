@@ -107,6 +107,24 @@ export default async function DoctorDetailPage({
         </section>
       ) : null}
 
+      <section className="doctor-finance-callout">
+        <div>
+          <span className="eyebrow">MFI staff only</span>
+          <h2>Financial intelligence</h2>
+          <p>
+            Track recorded work, invoices, payments, outstanding balances,
+            overdue accounts and staff follow-up for this doctor.
+          </p>
+        </div>
+
+        <Link
+          href={`/admin/doctors/${doctor.id}/financial`}
+          className="primary-button"
+        >
+          Open financial summary
+        </Link>
+      </section>
+
       <DoctorForm
         action={`/api/admin/doctors/${doctor.id}`}
         doctor={doctor}
@@ -115,3 +133,4 @@ export default async function DoctorDetailPage({
     </>
   );
 }
+
