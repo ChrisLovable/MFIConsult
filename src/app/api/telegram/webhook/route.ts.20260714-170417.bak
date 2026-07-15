@@ -3,10 +3,6 @@ import { after, NextRequest, NextResponse } from "next/server";
 import { getServerEnv } from "@/lib/env";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import {
-  getTelegramStartPayload,
-  linkDoctorFromInvite,
-} from "@/lib/doctor-onboarding";
-import {
   escapeTelegramHtml,
   sendTelegramMessage,
 } from "@/lib/telegram";
@@ -130,71 +126,6 @@ export async function POST(request: NextRequest) {
   }
 
   const supabase = getSupabaseAdmin();
-
-  const startPayload = getTelegramStartPayload(
-    message.text,
-  );
-
-  if (startPayload) {
-    const onboarding =
-      await linkDoctorFromInvite(
-        supabase,
-        startPayload,
-        telegramUser,
-      );
-
-    if (onboarding.status === "invalid") {
-      await sendTelegramMessage(
-        chatId,
-        [
-          "<b>Invitation not recognised</b>",
-          "",
-          "Ask MFI to send you a new doctor onboarding link.",
-        ].join("\n"),
-      );
-
-      return NextResponse.json({
-        ok: true,
-        action: "doctor_onboarding",
-        linked: false,
-      });
-    }
-
-    if (onboarding.status === "already_used") {
-      await sendTelegramMessage(
-        chatId,
-        [
-          "<b>Invitation already linked</b>",
-          "",
-          `The invitation for ${escapeTelegramHtml(onboarding.fullName)} is linked to another Telegram account.`,
-          "Contact MFI if the account must be changed.",
-        ].join("\n"),
-      );
-
-      return NextResponse.json({
-        ok: true,
-        action: "doctor_onboarding",
-        linked: false,
-      });
-    }
-
-    await sendTelegramMessage(
-      chatId,
-      [
-        `<b>Welcome, ${escapeTelegramHtml(onboarding.fullName)}</b>`,
-        "",
-        "Your Telegram account is now securely linked to your MFI Consult profile.",
-        "",
-        "Send one consultation billing voice note at a time. You will review and confirm every draft before it is sent.",
-      ].join("\n"),
-    );
-
-    return NextResponse.json({
-      ok: true,
-      action: "doctor_onboarding",
-      linked: true,
-    });
-  }
 
   const { data: doctor, error: doctorError } = await supabase
     .from("consultbill_doctors")
@@ -487,8 +418,6 @@ export async function POST(request: NextRequest) {
     reference: submission.reference,
   });
 }
-
-
 
 
 

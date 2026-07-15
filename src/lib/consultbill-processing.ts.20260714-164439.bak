@@ -1,6 +1,5 @@
 ﻿import type { BillingExtraction } from "@/lib/billing-extraction";
 import { extractBillingDetails } from "@/lib/billing-extraction";
-import { confirmLatestBillingDraft } from "@/lib/consultbill-actions";
 import { getServerEnv } from "@/lib/env";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import {
@@ -185,7 +184,7 @@ function formatBillingDraft(
     "",
     `<b>Extraction confidence:</b> ${Math.round(extraction.confidence * 100)}%`,
     "",
-    "Review this draft. Type CONFIRM, or send a short voice note saying confirm. Type or say CANCEL to discard it.",
+    "Review this draft. Confirmation, corrections, and accounting email delivery are added in the next build.",
   );
 
   return lines.join("\n").slice(0, 4000);
@@ -308,9 +307,9 @@ export async function processConsultationSubmission(
       throw extractionUpdateError;
     }
 
-    await confirmLatestBillingDraft(
-      doctor.id,
+    await sendTelegramMessage(
       chatId,
+      formatBillingDraft(reference, extraction),
     );
   } catch (error) {
     const message = safeMessage(error);
@@ -342,7 +341,4 @@ export async function processConsultationSubmission(
     }
   }
 }
-
-
-
 

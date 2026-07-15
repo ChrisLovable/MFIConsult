@@ -462,7 +462,7 @@ export async function confirmLatestBillingDraft(
     if (!claimed) {
       await sendTelegramMessage(
         chatId,
-        "This consultation is already being sent to MFI.",
+        "This billing draft is already being processed.",
       );
       return;
     }
@@ -562,15 +562,19 @@ export async function confirmLatestBillingDraft(
     await sendTelegramMessage(
       chatId,
       [
-        "<b>Successfully sent to MFI</b>",
+        "<b>Billing instruction sent</b>",
+        "",
         `Reference: <code>${escapeTelegramHtml(submission.reference)}</code>`,
+        `Recipient: ${escapeTelegramHtml(recipient)}`,
+        "",
+        "The email includes a copyable table, CSV attachment, and formatted Excel workbook.",
       ].join("\n"),
     );
   } catch (error) {
     const message = safeError(error);
 
     console.error(
-      `[ConsultBill] Automatic email failed for ${reference}:`,
+      `[ConsultBill] Confirmation/email failed for ${reference}:`,
       message,
     );
 
@@ -655,5 +659,4 @@ export async function cancelLatestBillingDraft(
     ].join("\n"),
   );
 }
-
 

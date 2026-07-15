@@ -3,10 +3,6 @@ import { after, NextRequest, NextResponse } from "next/server";
 import { getServerEnv } from "@/lib/env";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import {
-  getTelegramStartPayload,
-  linkDoctorFromInvite,
-} from "@/lib/doctor-onboarding";
-import {
   escapeTelegramHtml,
   sendTelegramMessage,
 } from "@/lib/telegram";
@@ -17,7 +13,6 @@ import {
   isCancellationText,
   isConfirmationText,
 } from "@/lib/consultbill-actions";
-import { processPendingDraftVoiceResponse } from "@/lib/consultbill-voice-response";
 import type {
   TelegramAudio,
   TelegramUpdate,
@@ -130,71 +125,6 @@ export async function POST(request: NextRequest) {
   }
 
   const supabase = getSupabaseAdmin();
-
-  const startPayload = getTelegramStartPayload(
-    message.text,
-  );
-
-  if (startPayload) {
-    const onboarding =
-      await linkDoctorFromInvite(
-        supabase,
-        startPayload,
-        telegramUser,
-      );
-
-    if (onboarding.status === "invalid") {
-      await sendTelegramMessage(
-        chatId,
-        [
-          "<b>Invitation not recognised</b>",
-          "",
-          "Ask MFI to send you a new doctor onboarding link.",
-        ].join("\n"),
-      );
-
-      return NextResponse.json({
-        ok: true,
-        action: "doctor_onboarding",
-        linked: false,
-      });
-    }
-
-    if (onboarding.status === "already_used") {
-      await sendTelegramMessage(
-        chatId,
-        [
-          "<b>Invitation already linked</b>",
-          "",
-          `The invitation for ${escapeTelegramHtml(onboarding.fullName)} is linked to another Telegram account.`,
-          "Contact MFI if the account must be changed.",
-        ].join("\n"),
-      );
-
-      return NextResponse.json({
-        ok: true,
-        action: "doctor_onboarding",
-        linked: false,
-      });
-    }
-
-    await sendTelegramMessage(
-      chatId,
-      [
-        `<b>Welcome, ${escapeTelegramHtml(onboarding.fullName)}</b>`,
-        "",
-        "Your Telegram account is now securely linked to your MFI Consult profile.",
-        "",
-        "Send one consultation billing voice note at a time. You will review and confirm every draft before it is sent.",
-      ].join("\n"),
-    );
-
-    return NextResponse.json({
-      ok: true,
-      action: "doctor_onboarding",
-      linked: true,
-    });
-  }
 
   const { data: doctor, error: doctorError } = await supabase
     .from("consultbill_doctors")
@@ -322,71 +252,6 @@ export async function POST(request: NextRequest) {
   }
   const audio = getAudioDetails(message.voice, message.audio);
 
-  if (audio && doctor?.is_active) {
-    const {
-      data: pendingDraft,
-      error: pendingDraftError,
-    } = await supabase
-      .from("consultbill_submissions")
-      .select("id, reference")
-      .eq("doctor_id", doctor.id)
-      .eq("telegram_chat_id", String(chatId))
-      .eq("status", "needs_confirmation")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (pendingDraftError) {
-      console.error(
-        "[ConsultBill] Pending draft lookup failed:",
-        pendingDraftError,
-      );
-
-      await sendTelegramMessage(
-        chatId,
-        "The pending billing draft could not be checked. Please type CONFIRM or try again.",
-      );
-
-      return NextResponse.json(
-        {
-          ok: false,
-          error: "Pending draft lookup failed",
-        },
-        {
-          status: 500,
-        },
-      );
-    }
-
-    if (pendingDraft) {
-      await sendTelegramMessage(
-        chatId,
-        [
-          "<b>Voice response received</b>",
-          `Draft reference: <code>${escapeTelegramHtml(pendingDraft.reference)}</code>`,
-          "",
-          "Checking whether you said confirm or cancel.",
-        ].join("\n"),
-      );
-
-      after(async () => {
-        await processPendingDraftVoiceResponse({
-          doctorId: doctor.id,
-          chatId,
-          fileId: audio.fileId,
-          mimeType: audio.mimeType,
-          reference: pendingDraft.reference,
-        });
-      });
-
-      return NextResponse.json({
-        ok: true,
-        action: "voice_draft_response",
-        reference: pendingDraft.reference,
-      });
-    }
-  }
-
   if (!audio) {
     await sendTelegramMessage(
       chatId,
@@ -487,8 +352,5 @@ export async function POST(request: NextRequest) {
     reference: submission.reference,
   });
 }
-
-
-
 
 
