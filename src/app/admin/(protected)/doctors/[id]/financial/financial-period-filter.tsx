@@ -58,6 +58,14 @@ export default function FinancialPeriodFilter({
           name="from"
           value={startDate}
           onChange={(event) => setStartDate(event.target.value)}
+          onClick={(event) => {
+            try {
+              event.currentTarget.showPicker();
+            } catch {
+              // Browser native date input remains available.
+            }
+          }}
+          style={{ cursor: "pointer" }}
           required
         />
       </label>
@@ -69,6 +77,14 @@ export default function FinancialPeriodFilter({
           name="to"
           value={endDate}
           onChange={(event) => setEndDate(event.target.value)}
+          onClick={(event) => {
+            try {
+              event.currentTarget.showPicker();
+            } catch {
+              // Browser native date input remains available.
+            }
+          }}
+          style={{ cursor: "pointer" }}
           required
         />
       </label>
