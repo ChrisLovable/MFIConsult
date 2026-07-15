@@ -18,6 +18,11 @@ const navigation = [
     label: "Doctors",
     symbol: "02",
   },
+  {
+    href: "/admin/ask",
+    label: "Ask MFI",
+    number: "03",
+  },
 ];
 
 export default async function AdminLayout({
