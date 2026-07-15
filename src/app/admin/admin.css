@@ -1065,3 +1065,465 @@ textarea {
     width: 92px;
   }
 }
+.onboarding-progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.progress-step {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: white;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.progress-step.active {
+  border-color: rgba(17, 166, 196, 0.28);
+  background: #e8f7fa;
+  color: #0a768d;
+}
+
+.onboarding-intro-card {
+  margin-bottom: 20px;
+  padding: 24px 26px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.8fr);
+  gap: 28px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(17, 166, 196, 0.07),
+      rgba(247, 42, 70, 0.035)
+    ),
+    white;
+  box-shadow: var(--shadow);
+}
+
+.onboarding-intro-card h2 {
+  max-width: 720px;
+  margin: 6px 0 0;
+  font-size: 24px;
+  line-height: 1.28;
+  letter-spacing: -0.025em;
+}
+
+.onboarding-benefits {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.onboarding-benefits span {
+  min-height: 42px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(17, 166, 196, 0.14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #4d6269;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+@media (max-width: 980px) {
+  .onboarding-intro-card {
+    grid-template-columns: 1fr;
+  }
+
+  .onboarding-progress {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 620px) {
+  .onboarding-benefits {
+    grid-template-columns: 1fr;
+  }
+}
+
+.login-panel {
+  position: relative;
+  z-index: 2;
+}
+
+.login-form {
+  position: relative;
+  z-index: 5;
+}
+
+.login-form input,
+.login-form button {
+  position: relative;
+  z-index: 6;
+  pointer-events: auto;
+}
+
+.login-panel::after,
+.login-visual::before,
+.login-visual::after,
+.logo-image {
+  pointer-events: none;
+}
+
+.login-form input {
+  color: #122026 !important;
+  background: #ffffff !important;
+  caret-color: #122026 !important;
+}
+
+.login-form input::placeholder {
+  color: #8a9692 !important;
+  opacity: 1;
+}
+
+.login-form label > span {
+  color: #3c4a4f !important;
+}
+
+/* ===== ADMIN READABILITY FIX ===== */
+
+.admin-main,
+.admin-main h1,
+.admin-main h2,
+.admin-main h3,
+.admin-main p,
+.admin-main label,
+.admin-main strong,
+.admin-main span,
+.admin-main small {
+  color: #122026;
+}
+
+.page-header h1,
+.page-header h2,
+.page-header h3 {
+  color: #122026 !important;
+}
+
+.page-header p,
+.admin-main p,
+.admin-main small {
+  color: #637278 !important;
+}
+
+.admin-main .eyebrow {
+  color: #0f90ab !important;
+}
+
+.admin-sidebar,
+.admin-sidebar strong,
+.admin-sidebar span {
+  color: #ffffff;
+}
+
+.admin-sidebar small {
+  color: rgba(255, 255, 255, 0.66) !important;
+}
+
+.admin-nav a {
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+
+.admin-nav a:hover {
+  color: #ffffff !important;
+}
+
+.form-card,
+.content-card,
+.metric-card,
+.invite-card,
+.onboarding-intro-card {
+  background: #ffffff !important;
+  color: #122026 !important;
+}
+
+.onboarding-intro-card h2 {
+  color: #122026 !important;
+}
+
+.onboarding-benefits span {
+  color: #31444b !important;
+  background: #ffffff !important;
+}
+
+.section-heading h2,
+.section-heading strong,
+.form-card h2 {
+  color: #122026 !important;
+}
+
+.admin-form label > span,
+.full-field > span {
+  color: #31444b !important;
+}
+
+.admin-form input,
+.admin-form select,
+.admin-form textarea {
+  color: #122026 !important;
+  background: #ffffff !important;
+  border-color: #bdcbc7 !important;
+  caret-color: #122026 !important;
+}
+
+.admin-form input::placeholder,
+.admin-form textarea::placeholder {
+  color: #8b9894 !important;
+  opacity: 1;
+}
+
+.checkbox-card {
+  background: #f4f8f7 !important;
+  color: #31444b !important;
+}
+
+.checkbox-card span {
+  color: #31444b !important;
+}
+
+.service-header span {
+  color: #5d6c71 !important;
+}
+
+.progress-step {
+  color: #5f6f74 !important;
+  background: #ffffff !important;
+}
+
+.progress-step.active {
+  color: #08768d !important;
+  background: #e7f7fa !important;
+}
+
+.back-link {
+  color: #0f90ab !important;
+}
+
+.sticky-submit strong {
+  color: #122026 !important;
+}
+
+.sticky-submit span {
+  color: #637278 !important;
+}
+
+/* MFI logo must stay visible on light and dark backgrounds */
+.brand-logo-image {
+  background: rgba(255, 255, 255, 0.96);
+  padding: 7px;
+  border-radius: 10px;
+}
+
+.logo-image,
+.join-logo-image {
+  filter: none;
+}
+
+/* ===== FINAL ADMIN SIDEBAR AND FORM CONTRAST FIX ===== */
+
+.admin-sidebar {
+  background:
+    linear-gradient(
+      180deg,
+      #102c36 0%,
+      #143945 58%,
+      #102c36 100%
+    ) !important;
+  color: #ffffff !important;
+}
+
+.admin-sidebar *,
+.admin-sidebar a,
+.admin-sidebar button {
+  color: #ffffff !important;
+}
+
+.admin-brand {
+  padding: 8px 6px 22px;
+  border-bottom: 1px solid rgba(255,255,255,0.10);
+}
+
+.admin-brand .brand-copy strong {
+  color: #ffffff !important;
+  font-size: 17px;
+}
+
+.admin-brand .brand-copy small {
+  color: rgba(255,255,255,0.66) !important;
+}
+
+.brand-logo-image {
+  width: 94px !important;
+  height: auto !important;
+  padding: 7px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.96);
+  object-fit: contain;
+}
+
+.admin-nav {
+  margin-top: 18px;
+}
+
+.admin-nav a {
+  color: rgba(255,255,255,0.76) !important;
+  background: transparent !important;
+}
+
+.admin-nav a span {
+  color: #82d7e7 !important;
+}
+
+.admin-nav a:hover {
+  color: #ffffff !important;
+  background: rgba(255,255,255,0.09) !important;
+}
+
+.admin-identity strong {
+  color: #ffffff !important;
+}
+
+.admin-identity small {
+  color: rgba(255,255,255,0.62) !important;
+}
+
+.ghost-button {
+  color: #ffffff !important;
+  background: rgba(255,255,255,0.04) !important;
+  border-color: rgba(255,255,255,0.20) !important;
+}
+
+.ghost-button:hover {
+  background: rgba(255,255,255,0.10) !important;
+}
+
+/* Ensure the main workspace stays light and readable */
+.admin-main {
+  background: #f5f8f7 !important;
+  color: #122026 !important;
+}
+
+.admin-main h1,
+.admin-main h2,
+.admin-main h3,
+.admin-main strong {
+  color: #122026 !important;
+}
+
+.admin-main p,
+.admin-main small {
+  color: #637278 !important;
+}
+
+/* Fix all form input states, including browser autofill */
+.admin-form input,
+.admin-form select,
+.admin-form textarea {
+  color: #122026 !important;
+  background-color: #ffffff !important;
+  -webkit-text-fill-color: #122026 !important;
+  opacity: 1 !important;
+}
+
+.admin-form input:-webkit-autofill,
+.admin-form input:-webkit-autofill:hover,
+.admin-form input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #122026 !important;
+  box-shadow: 0 0 0 1000px #ffffff inset !important;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* Make disabled or prefilled fields readable */
+.admin-form input:disabled,
+.admin-form select:disabled,
+.admin-form textarea:disabled {
+  color: #43545a !important;
+  background: #edf2f1 !important;
+  -webkit-text-fill-color: #43545a !important;
+  opacity: 1 !important;
+}
+
+/* Keep cards clearly separated */
+.form-card,
+.content-card,
+.onboarding-intro-card {
+  border: 1px solid #d7e1de !important;
+  background: #ffffff !important;
+}
+
+.onboarding-benefits span {
+  color: #263b42 !important;
+  background: #ffffff !important;
+}
+
+/* Make the progress badges readable */
+.progress-step {
+  color: #4f6167 !important;
+  background: #ffffff !important;
+}
+
+.progress-step.active {
+  color: #076f85 !important;
+  background: #e4f6fa !important;
+}
+
+/* Prevent accidental inherited white text */
+.admin-main label,
+.admin-main label span,
+.admin-main .checkbox-card span,
+.admin-main .service-header span {
+  color: #31444b !important;
+}
+
+/* Remembered admin login */
+
+.remember-row {
+  display: grid !important;
+  grid-template-columns: auto 1fr;
+  gap: 11px !important;
+  align-items: flex-start;
+  padding: 13px 14px;
+  border: 1px solid #d9e3e0;
+  border-radius: 11px;
+  background: #f5f9f8;
+  cursor: pointer;
+}
+
+.remember-row input {
+  width: 18px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  margin: 2px 0 0;
+  accent-color: #0f90ab;
+  cursor: pointer;
+}
+
+.remember-row > span {
+  display: grid;
+  gap: 3px;
+}
+
+.remember-row strong {
+  color: #23363c !important;
+  font-size: 13px;
+}
+
+.remember-row small {
+  color: #6b7b80 !important;
+  font-size: 11px;
+  line-height: 1.4;
+}

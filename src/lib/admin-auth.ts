@@ -1,4 +1,4 @@
-﻿import {
+import {
   createHmac,
   timingSafeEqual,
 } from "node:crypto";
@@ -6,7 +6,9 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 const COOKIE_NAME = "mfi_consult_admin";
-const SESSION_SECONDS = 8 * 60 * 60;
+const DEFAULT_SESSION_SECONDS = 8 * 60 * 60;
+const REMEMBERED_SESSION_SECONDS =
+  30 * 24 * 60 * 60;
 
 interface AdminSession {
   email: string;
@@ -108,9 +110,16 @@ export function verifyAdminCredentials(
 
 export async function createAdminSession(
   email: string,
+  rememberMe: boolean,
 ): Promise<void> {
   const store = await cookies();
-  const expiresAt = Date.now() + SESSION_SECONDS * 1000;
+
+  const sessionSeconds = rememberMe
+    ? REMEMBERED_SESSION_SECONDS
+    : DEFAULT_SESSION_SECONDS;
+
+  const expiresAt =
+    Date.now() + sessionSeconds * 1000;
 
   store.set(
     COOKIE_NAME,
@@ -122,7 +131,7 @@ export async function createAdminSession(
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: SESSION_SECONDS,
+      maxAge: sessionSeconds,
       path: "/",
     },
   );

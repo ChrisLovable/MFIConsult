@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import {
   createAdminSession,
   verifyAdminCredentials,
@@ -16,6 +16,9 @@ export async function POST(request: NextRequest) {
     formData.get("password") ?? "",
   );
 
+  const rememberMe =
+    formData.get("remember_me") === "yes";
+
   if (!verifyAdminCredentials(email, password)) {
     return NextResponse.redirect(
       new URL("/admin/login?error=1", request.url),
@@ -23,7 +26,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  await createAdminSession(email);
+  await createAdminSession(email, rememberMe);
 
   return NextResponse.redirect(
     new URL("/admin", request.url),

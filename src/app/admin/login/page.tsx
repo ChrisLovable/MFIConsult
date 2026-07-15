@@ -1,4 +1,4 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import "../admin.css";
 import {
@@ -83,6 +83,25 @@ export default async function AdminLoginPage({
               autoComplete="current-password"
               placeholder="Your secure password"
             />
+          </label>
+
+          <label className="remember-row">
+            <input
+              type="checkbox"
+              name="remember_me"
+              value="yes"
+              defaultChecked
+            />
+
+            <span>
+              <strong>
+                Keep me signed in on this device
+              </strong>
+
+              <small>
+                Stay signed in securely for 30 days.
+              </small>
+            </span>
           </label>
 
           <button
