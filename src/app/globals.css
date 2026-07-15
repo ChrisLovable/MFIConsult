@@ -1460,3 +1460,185 @@ a {
     max-width: 96%;
   }
 }
+
+/* ASK MFI WORKSPACE FIT V2.1 */
+
+/*
+ * Prevent every part of the Ask MFI workspace from growing
+ * beyond its assigned grid column.
+ */
+.ask-v2-workspace,
+.ask-v2-thread-rail,
+.ask-v2-main,
+.ask-v2-composer,
+.ask-v2-result,
+.ask-v2-answer-card,
+.ask-v2-panel,
+.ask-v2-results-card {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/*
+ * Keep the conversation title and New button inside the rail.
+ */
+.ask-v2-thread-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  width: 100%;
+  align-items: start;
+}
+
+.ask-v2-thread-header > div {
+  min-width: 0;
+}
+
+.ask-v2-thread-header h2 {
+  overflow: hidden;
+  font-size: 21px;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ask-v2-thread-header .secondary-button {
+  min-width: 54px;
+  max-width: 62px;
+  min-height: 34px;
+  padding: 0 9px;
+  flex: none;
+}
+
+/*
+ * Keep the search field and conversation items inside the rail.
+ */
+.ask-v2-thread-search,
+.ask-v2-thread-search input,
+.ask-v2-thread-list,
+.ask-v2-thread-list button {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/*
+ * Suggested questions may wrap instead of extending outside
+ * the main question card.
+ */
+.ask-v2-suggestions {
+  max-width: 100%;
+}
+
+.ask-v2-suggestions button {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/*
+ * Make the verified table fit the card width without a
+ * horizontal scrollbar.
+ */
+.ask-v2-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  margin-right: 0;
+  margin-left: 0;
+  overflow-x: hidden;
+}
+
+.ask-v2-table {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+}
+
+.ask-v2-table th,
+.ask-v2-table td {
+  padding: 10px 6px;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  white-space: normal;
+}
+
+.ask-v2-table th {
+  font-size: 8px;
+  line-height: 1.25;
+}
+
+.ask-v2-table td {
+  font-size: 9.5px;
+  line-height: 1.35;
+}
+
+.ask-v2-table th:nth-child(n + 3),
+.ask-v2-table td:nth-child(n + 3) {
+  white-space: normal;
+}
+
+/*
+ * Doctor and practice columns receive more room when the
+ * standard eight-column financial result is displayed.
+ */
+.ask-v2-table th:first-child,
+.ask-v2-table td:first-child {
+  width: 17%;
+}
+
+.ask-v2-table th:nth-child(2),
+.ask-v2-table td:nth-child(2) {
+  width: 21%;
+}
+
+/*
+ * Ensure the top heading and question form can shrink without
+ * pushing the workspace wider.
+ */
+.ask-v2-composer-heading > div,
+.ask-v2-answer-heading > div,
+.ask-v2-results-heading > div {
+  min-width: 0;
+}
+
+.ask-v2-composer textarea {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1120px) {
+  .ask-v2-workspace {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+
+  .ask-v2-table th,
+  .ask-v2-table td {
+    padding-right: 4px;
+    padding-left: 4px;
+  }
+
+  .ask-v2-table td {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 880px) {
+  .ask-v2-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ask-v2-thread-header h2 {
+    white-space: normal;
+  }
+}
+
+@media (max-width: 620px) {
+  .ask-v2-table-wrap {
+    overflow-x: auto;
+  }
+
+  .ask-v2-table {
+    min-width: 620px;
+  }
+}
