@@ -13,8 +13,8 @@ import { NextRequest, NextResponse } from "next/server";
 // used by the Telegram handler.
 // ============================================================
 
-const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN!;       // You choose this — any random string
-const ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN!;       // From Meta app dashboard
+const VERIFY_TOKEN = "myaipartner_webhook_2026";       // You choose this — any random string
+const ACCESS_TOKEN = "EAAWXdd7B9Y0BSHNH0GwnLwmGKf4bSpu2Yd4fULcfHD2ofdHG9PlbZAsnWT7LOyLa1m5zTBxM9G5oVZCCJkc8esZBs6ZAO6TkOwZAcxyRWZCsu5TJHyNn8tu8d5afol8BS4RZBiuG0LUOkIiE4deZBYgZBhFRM7KbCDAFztNCl0rP79RmJUWP6LTLCZCtiGZAHd0ffZBJDbCBHdVp6NcsnrEJZBrYJIcmOzZCkIPWe4d3WZCxPD1KbM37m8feSBLYM62cGZB7kxsaa6i0ohAYRoorIFMU4CPNWKf16uBZCudK92AZDZD";       // From Meta app dashboard
 const GRAPH_API    = "https://graph.facebook.com/v21.0";
 
 // ----------------------------------------------------------
